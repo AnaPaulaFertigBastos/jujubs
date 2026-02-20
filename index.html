@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Para Julia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:      #f472b6;
+      --pink-deep: #db2777;
+      --pink-pale: #fdf2f8;
+      --cream:     #fff9f5;
+      --text:      #3b1f2b;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      font-family: 'Lora', serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── confetti particles ── */
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .18;
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(110vh) rotate(0deg); }
+      100% { transform: translateY(-10vh)  rotate(360deg); }
+    }
+
+    /* ── main card ── */
+    .card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem 2rem 2rem;
+      max-width: 420px;
+      width: 90%;
+    }
+
+    .subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(.8rem, 2.5vw, .95rem);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--pink-deep);
+      opacity: .7;
+      margin-bottom: 2.2rem;
+    }
+
+    /* ── heart ── */
+    .heart-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .heart {
+      font-size: clamp(4.5rem, 18vw, 6.5rem);
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      animation: pulse 1.3s ease-in-out infinite;
+      filter: drop-shadow(0 0 18px #f9a8d4);
+      transition: transform .15s;
+      display: inline-block;
+    }
+
+    .heart:active { transform: scale(.88); }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.13); }
+    }
+
+    .heart.boom {
+      animation: boom .45s cubic-bezier(.36,.07,.19,.97) forwards,
+                 pulse 1.3s ease-in-out infinite 0.46s;
+    }
+
+    @keyframes boom {
+      0%  { transform: scale(1); }
+      30% { transform: scale(1.42); }
+      60% { transform: scale(.92); }
+      100%{ transform: scale(1); }
+    }
+
+    .hint {
+      font-size: .75rem;
+      letter-spacing: .1em;
+      color: var(--pink);
+      opacity: .65;
+      text-transform: uppercase;
+      margin-top: -.8rem;
+      margin-bottom: 2.2rem;
+      transition: opacity .3s;
+    }
+    .hint.hidden { opacity: 0; }
+
+    /* ── message ── */
+    .message {
+      background: white;
+      border: 1.5px solid #fce7f3;
+      border-radius: 1.4rem;
+      padding: 1.8rem 1.6rem;
+      box-shadow: 0 8px 40px -10px #f9a8d466,
+                  0 2px 8px -2px #f472b620;
+      text-align: left;
+      color: var(--text);
+      line-height: 1.8;
+      font-size: clamp(.9rem, 3vw, 1rem);
+
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(14px) scale(.97);
+      transition: max-height .6s cubic-bezier(.4,0,.2,1),
+                  opacity .5s ease,
+                  transform .5s ease;
+    }
+
+    .message.visible {
+      max-height: 300px;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .message p { margin-bottom: .6rem; }
+    .message p:last-child { margin-bottom: 0; }
+    .message .kiss {
+      display: block;
+      text-align: right;
+      margin-top: .8rem;
+      font-style: italic;
+      color: var(--pink-deep);
+      font-size: 1.05em;
+    }
+
+    /* ── candles row ── */
+    .candles {
+      font-size: 1.6rem;
+      letter-spacing: .4rem;
+      margin-top: 2rem;
+      opacity: .55;
+      animation: flicker 2s ease-in-out infinite alternate;
+    }
+    @keyframes flicker {
+      0%  { opacity: .55; }
+      100%{ opacity: .75; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- floating dots -->
+  <div class="particles" id="particles"></div>
+
+  <div class="card">
+    <p class="subtitle">para Julia ✦ com carinho</p>
+
+    <div class="heart-wrap">
+      <span class="heart" id="heart" role="button" aria-label="Clique para ver a mensagem">❤</span>
+    </div>
+
+    <p class="hint" id="hint">toque no coração</p>
+
+    <div class="message" id="msg">
+      
+      <p>Queria te desejar um feliz aniversário! Que você seja sempre essa menina tão sorridente e engraçada. </p>
+      <p>Que essa ano venha com muita saúde, amor, felicidades e sonhos realizados.</p>
+      <p>Desculpa não ir hoje.</p>
+      <p>Te desejo as melhores coisas!</p>
+      <span class="kiss">Beijo ♡</span>
+    </div>
+
+    <div class="candles"></div>
+  </div>
+
+  <script>
+    // floating particles
+    const container = document.getElementById('particles');
+    const colors = ['#f9a8d4','#fbcfe8','#fde68a','#a5f3fc','#c4b5fd'];
+    for (let i = 0; i < 28; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      const size = Math.random() * 10 + 5;
+      d.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${Math.random()*14+8}s;
+        animation-delay:-${Math.random()*14}s;
+      `;
+      container.appendChild(d);
+    }
+
+    // heart click
+    const heart = document.getElementById('heart');
+    const msg   = document.getElementById('msg');
+    const hint  = document.getElementById('hint');
+    let opened  = false;
+
+    heart.addEventListener('click', () => {
+      heart.classList.remove('boom');
+      void heart.offsetWidth; // reflow
+      heart.classList.add('boom');
+
+      if (!opened) {
+        opened = true;
+        hint.classList.add('hidden');
+        setTimeout(() => msg.classList.add('visible'), 150);
+      }
+    });
+  </script>
+</body>
+</html>
